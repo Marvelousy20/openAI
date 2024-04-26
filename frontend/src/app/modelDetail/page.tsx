@@ -59,13 +59,13 @@ export default function ModelDetails() {
   const owner = searchParams.get("owner");
 
   let userDataString = null;
-  if (typeof window !== 'undefined') {
-    userDataString = localStorage.getItem('userData');
+  if (typeof window !== "undefined") {
+    userDataString = localStorage.getItem("userData");
   }
   const userData = userDataString ? JSON.parse(userDataString) : null;
   const walletAddress = userData?.walletAddress;
 
-  const model = owner + '/' + name
+  const model = owner + "/" + name;
 
   const [modelDetails, setModelDetails] = useState<ModelProps | null>(null);
 
@@ -131,10 +131,18 @@ export default function ModelDetails() {
 
         const canceledPrediction = await response.json();
 
-        const cancelPredictionResponse = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/prediction/`, { walletAddress: `${walletAddress}`, status: 'canceled', model: model, created: prediction?.created_at, time: "0.0" })
+        const cancelPredictionResponse = await axios.post(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/prediction/`,
+          {
+            walletAddress: `${walletAddress}`,
+            status: "canceled",
+            model: model,
+            created: prediction?.created_at,
+            time: "0.0",
+          }
+        );
 
         setPrediction(canceledPrediction);
-
       } catch (error) {
         console.error("Error canceling prediction:", error);
       } finally {
@@ -143,34 +151,59 @@ export default function ModelDetails() {
     }
   };
 
+  // Check if the output is a URL or structured data
+
+  const renderOutput = (output: any) => {
+    if (Array.isArray(output)) {
+      return output.map((item, index) => (
+        <div key={index}>{renderOutput(item)}</div>
+      ));
+    } else if (
+      typeof output === "string" &&
+      (output.startsWith("http://") || output.startsWith("https://"))
+    ) {
+      return renderMedia(output);
+    } else if (typeof output === "object" && output !== null) {
+      return <pre>{JSON.stringify(output, null, 2)}</pre>; // JSON formatting for objects
+    } else {
+      return <span>{output}</span>;
+    }
+  };
+
+  const renderMedia = (url: string) => {
+    if (url.match(/\.(mp4|webm|ogg)$/i)) {
+      return (
+        <video controls width="700" height="400">
+          <source src={url} type={`video/${url.split(".").pop()}`} />
+        </video>
+      );
+    } else if (url.match(/\.(mp3|wav|ogg)$/i)) {
+      return (
+        <audio controls>
+          <source src={url} type={`audio/${url.split(".").pop()}`} />
+        </audio>
+      );
+    } else {
+      return <Image src={url} alt="Output" width={700} height={400} />;
+    }
+  };
+
   return (
-    <Suspense>
-      <div className="flex flex-col items-center w-full">
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="flex flex-col items-center w-full text-black dark:text-white">
         <div className="px-4 lg:px-16 w-full">
           {/* <div className="mb-4 inline-flex" onClick={handleBack}>
             <ArrowLeft />
           </div> */}
           {/* Content */}
 
-          <p className="text-3xl font-bold mt-6">{modelDetails.name}</p>
+          <p className="text-3xl font-bold mt-12">{modelDetails.name}</p>
           <p className="pt-[20px]">{modelDetails.description}</p>
           <div className="relative mt-[40px]">
             <div className="grid grid-cols-1 lg:grid-cols-2 mt-3 gap-10 justify-center flex-wrap border-t-2 h-full">
               {/* Input */}
               <div className="!col-span-1 mt-2">
                 <h2 className="mb-4 text-2xl">INPUT</h2>
-
-                {/* {modelDetails.cover_image_url ? (
-                  <Image
-                    src={modelDetails.cover_image_url}
-                    alt="img"
-                    width={700}
-                    height={400}
-                    priority
-                  />
-                ) : (
-                  <div className="h-[400px] w-300px lg:w-[500px] bg-red-500"></div>
-                )} */}
 
                 {/* Dynamic Input */}
                 <div className="mt-5">
@@ -197,79 +230,7 @@ export default function ModelDetails() {
                     priority
                   />
                 ) : (
-                  prediction?.output && (
-                    <div>
-                      {Array.isArray(prediction?.output) ? (
-                        prediction.output.map((url, index) => (
-                          <div key={index}>
-                            {url.endsWith(".mp4") ||
-                              url.endsWith(".webm") ||
-                              url.endsWith(".ogg") ? (
-                              // Render a video element if the URL ends with a video file extension
-                              <video controls width="700" height="400">
-                                <source src={url} type="video/mp4" />
-                                Your browser does not support the video tag.
-                              </video>
-                            ) : url.endsWith(".mp3") ||
-                              url.endsWith(".wav") ||
-                              url.endsWith(".ogg") ? (
-                              // Render an audio element if the URL ends with an audio file extension
-                              <audio controls>
-                                <source src={url} type="audio/mpeg" />
-                                Your browser does not support the audio element.
-                              </audio>
-                            ) : (
-                              // Render an image element otherwise
-                              <Image
-                                src={url}
-                                alt={`image ${index + 1}`}
-                                width={700}
-                                height={400}
-                              />
-                            )}
-                          </div>
-                        ))
-                      ) : (
-                        <div>
-                          {prediction.output.endsWith(".mp4") ||
-                            prediction.output.endsWith(".webm") ||
-                            prediction.output.endsWith(".ogg") ? (
-                            // Render a video element if the URL ends with a video file extension
-                            <video controls width="700" height="400">
-                              <source
-                                src={prediction.output}
-                                type="video/mp4"
-                              />
-                              Your browser does not support the video tag.
-                            </video>
-                          ) : prediction.output.endsWith(".mp3") ||
-                            prediction.output.endsWith(".wav") ||
-                            prediction.output.endsWith(".ogg") ? (
-                            // Render an audio element if the URL ends with an audio file extension
-                            <audio controls>
-                              <source
-                                src={prediction.output}
-                                type="audio/mpeg"
-                              />
-                              Your browser does not support the audio element.
-                            </audio>
-                          ) : (
-                            // Render an image element otherwise
-                            <Image
-                              src={prediction.output}
-                              alt="image"
-                              width={700}
-                              height={400}
-                            />
-                          )}
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2 mt-4">
-                        predict_time: {prediction?.metrics?.predict_time}{" "}
-                        seconds
-                      </div>
-                    </div>
-                  )
+                  prediction?.output && renderOutput(prediction.output)
                 )}
 
                 {prediction?.id ? (

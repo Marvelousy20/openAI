@@ -87,3 +87,110 @@
   top: 0;
   bottom: 0;
  }
+
+
+
+ :where(.css-dev-only-do-not-override-1kuana8).ant-pagination .ant-pagination-item a {
+  color: white;
+ }
+
+ :where(.css-dev-only-do-not-override-1kuana8).ant-pagination .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis, :where(.css-dev-only-do-not-override-1kuana8).ant-pagination .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis  {
+  color: white;
+ }
+
+ .antdesign svg {
+  color: white;
+ }
+
+ :where(.css-dev-only-do-not-override-1kuana8).ant-pagination .ant-pagination-item-active a {
+  color: black;
+}
+
+:where(.css-dev-only-do-not-override-1kuana8).ant-pagination .ant-pagination-next button {
+  color: white;
+}
+
+:where(.css-dev-only-do-not-override-1kuana8).ant-pagination .ant-pagination-prev button {
+  color: white;
+}
+
+
+.css-dev-only-do-not-override-1kuana8.ant-pagination.light .ant-pagination-item a {
+  color: black; /* Dark text for light backgrounds */
+}
+
+.css-dev-only-do-not-override-1kuana8.ant-pagination.light .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis,
+.css-dev-only-do-not-override-1kuana8.ant-pagination.light .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis {
+  color: black; /* Dark text for visibility */
+}
+
+.antdesign.light svg {
+  color: black; /* Dark icons for light mode */
+}
+
+.css-dev-only-do-not-override-1kuana8.ant-pagination.light .ant-pagination-item-active a {
+  color: white; /* Light active text, consider changing background if needed */
+  background-color: #555; /* Dark background for active item to make white text visible */
+}
+
+.css-dev-only-do-not-override-1kuana8.ant-pagination.light .ant-pagination-next button,
+.css-dev-only-do-not-override-1kuana8.ant-pagination.light .ant-pagination-prev button {
+  color: black; /* Dark arrow buttons for light backgrounds */
+}
+
+
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.avatar-image {
+  display: block;
+  width: 100px; /* Adjust size as needed */
+  height: 100px;
+  border-radius: 50%;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  /* Position the tooltip text */
+  z-index: 1;
+}
+
+.avatar-wrapper:hover .tooltip {
+  visibility: visible;
+}
+
+.spinner .path {
+  stroke: #5652bf;
+  stroke-dasharray: 187;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes dash {
+  0% {
+      stroke-dasharray: 1, 187;
+      stroke-dashoffset: 0;
+  }
+  50% {
+      stroke-dasharray: 90, 187;
+      stroke-dashoffset: -35;
+  }
+  100% {
+      stroke-dasharray: 90, 187;
+      stroke-dashoffset: -124;
+  }
+}
